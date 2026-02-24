@@ -1,0 +1,20 @@
+{
+  "logoutButton": "Դուրս գալ",
+  "errors": {
+    "forbiddenMessage": "Դուք չունեք մուտք այս էջ"
+  },
+  "tabs": {
+    "testPageTab": "Թեստ",
+    "stationsTab": "Կանգառներ"
+  },
+  "actions": {
+    "create": "Ստեղծել",
+    "view": "Դիտել"
+  },
+  "testPage": {
+    "title": "Թեստի էջ"
+  },
+  "stationsPage": {
+    "title": "Կանգառներ"
+  }
+}

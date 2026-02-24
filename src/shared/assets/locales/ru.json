@@ -1,0 +1,20 @@
+{
+  "logoutButton": "Выйти",
+  "errors": {
+    "forbiddenMessage": "У вас нет доступа к этой странице"
+  },
+  "tabs": {
+    "testPageTab": "Тест",
+    "stationsTab": "Станции"
+  },
+  "actions": {
+    "create": "Создать",
+    "view": "Просмотр"
+  },
+  "testPage": {
+    "title": "Страница теста"
+  },
+  "stationsPage": {
+    "title": "Станции"
+  }
+}

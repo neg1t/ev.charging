@@ -1,0 +1,20 @@
+{
+  "logoutButton": "Logout",
+  "errors": {
+    "forbiddenMessage": "You do not have access to this page"
+  },
+  "tabs": {
+    "testPageTab": "Test",
+    "stationsTab": "Stations"
+  },
+  "actions": {
+    "create": "Create",
+    "view": "View"
+  },
+  "testPage": {
+    "title": "Test Page"
+  },
+  "stationsPage": {
+    "title": "Stations"
+  }
+}

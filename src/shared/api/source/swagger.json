@@ -1,0 +1,5982 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "Admin service docs",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/admin/famous-persons": {
+      "post": {
+        "tags": [
+          "FamousPerson"
+        ],
+        "summary": "Добавить знаменитую личность",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "Body.BirthDate",
+                  "Body.Name",
+                  "Body.Surname",
+                  "Photo"
+                ],
+                "type": "object",
+                "properties": {
+                  "Body.Name": {
+                    "maxLength": 100,
+                    "type": "string",
+                    "description": "Имя"
+                  },
+                  "Body.Surname": {
+                    "maxLength": 150,
+                    "type": "string",
+                    "description": "Фамилия"
+                  },
+                  "Body.Patronymic": {
+                    "maxLength": 300,
+                    "type": "string",
+                    "description": "Отчество"
+                  },
+                  "Body.BirthDate": {
+                    "type": "string",
+                    "description": "Дата рождения",
+                    "format": "date"
+                  },
+                  "Body.DeathDate": {
+                    "type": "string",
+                    "description": "Дата смерти",
+                    "format": "date"
+                  },
+                  "Body.Content": {
+                    "type": "string",
+                    "description": "Содержание"
+                  },
+                  "Body.ShortInfo": {
+                    "type": "string",
+                    "description": "Краткая информация"
+                  },
+                  "Body.TagIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "description": "Список тэгов"
+                  },
+                  "Photo": {
+                    "type": "string",
+                    "description": "Фотография",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "Body.Name": {
+                  "style": "form"
+                },
+                "Body.Surname": {
+                  "style": "form"
+                },
+                "Body.Patronymic": {
+                  "style": "form"
+                },
+                "Body.BirthDate": {
+                  "style": "form"
+                },
+                "Body.DeathDate": {
+                  "style": "form"
+                },
+                "Body.Content": {
+                  "style": "form"
+                },
+                "Body.ShortInfo": {
+                  "style": "form"
+                },
+                "Body.TagIds": {
+                  "style": "form"
+                },
+                "Photo": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Личность добавлена",
+            "headers": {
+              "Location": {
+                "description": "URI созданного ресурса",
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuidCreatedOrUpdatedEntityModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "FamousPerson"
+        ],
+        "summary": "Получение списка знаменитых личностей",
+        "parameters": [
+          {
+            "name": "SortBy",
+            "in": "query",
+            "description": "Сортировка по (по умолчанию по дате создания в обратном порядке)",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/FamousPersonSortBy"
+            }
+          },
+          {
+            "name": "TagIds",
+            "in": "query",
+            "description": "Фильтрация по тэгам",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          },
+          {
+            "name": "SearchQuery",
+            "in": "query",
+            "description": "Строка поиска",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Limit",
+            "in": "query",
+            "description": "Пагинация - сколько необходимо получить элементов",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Offset",
+            "in": "query",
+            "description": "Пагинация - сколько необходимо пропустить элементов",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Список знаменитых личностей",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamousPersonListModelPagedResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/famous-persons/{id}": {
+      "put": {
+        "tags": [
+          "FamousPerson"
+        ],
+        "summary": "Отредактировать знаменитую личность",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Идентификатор знаменитой личности",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "Body.BirthDate",
+                  "Body.Name",
+                  "Body.Surname"
+                ],
+                "type": "object",
+                "properties": {
+                  "Body.Name": {
+                    "maxLength": 100,
+                    "type": "string",
+                    "description": "Имя"
+                  },
+                  "Body.Surname": {
+                    "maxLength": 150,
+                    "type": "string",
+                    "description": "Фамилия"
+                  },
+                  "Body.Patronymic": {
+                    "maxLength": 300,
+                    "type": "string",
+                    "description": "Отчество"
+                  },
+                  "Body.BirthDate": {
+                    "type": "string",
+                    "description": "Дата рождения",
+                    "format": "date"
+                  },
+                  "Body.DeathDate": {
+                    "type": "string",
+                    "description": "Дата смерти",
+                    "format": "date"
+                  },
+                  "Body.Content": {
+                    "type": "string",
+                    "description": "Содержание"
+                  },
+                  "Body.ShortInfo": {
+                    "type": "string",
+                    "description": "Краткая информация"
+                  },
+                  "Body.TagIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "description": "Список тэгов"
+                  },
+                  "NewPhoto": {
+                    "type": "string",
+                    "description": "Новое фото (null, если фото не менялось)",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "Body.Name": {
+                  "style": "form"
+                },
+                "Body.Surname": {
+                  "style": "form"
+                },
+                "Body.Patronymic": {
+                  "style": "form"
+                },
+                "Body.BirthDate": {
+                  "style": "form"
+                },
+                "Body.DeathDate": {
+                  "style": "form"
+                },
+                "Body.Content": {
+                  "style": "form"
+                },
+                "Body.ShortInfo": {
+                  "style": "form"
+                },
+                "Body.TagIds": {
+                  "style": "form"
+                },
+                "NewPhoto": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Личность отредактирована",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuidCreatedOrUpdatedEntityModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Личность не найдена.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.FamousPersonNotFound - 62",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/famous-persons/{Id}": {
+      "delete": {
+        "tags": [
+          "FamousPerson"
+        ],
+        "summary": "Удалить знаменитую личность",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Идентификатор личности",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Личность удалена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unit"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Личность не найдена.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.FamousPersonNotFound - 62",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "FamousPerson"
+        ],
+        "summary": "Получение знаменитой личности по идентификатору",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Идентификатор личности",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Знаменитая личность",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamousPersonModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Личность не найдена.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.FamousPersonNotFound - 62",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/feedbacks": {
+      "get": {
+        "tags": [
+          "Feedback"
+        ],
+        "summary": "Получить список сообщений из обратной связи.\nПоиск по имени, телефону, почте",
+        "parameters": [
+          {
+            "name": "SortBy",
+            "in": "query",
+            "description": "Сортировать по",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/FeedbackSortBy"
+            }
+          },
+          {
+            "name": "SearchQuery",
+            "in": "query",
+            "description": "Строка поиска",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Limit",
+            "in": "query",
+            "description": "Пагинация - сколько необходимо получить элементов",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Offset",
+            "in": "query",
+            "description": "Пагинация - сколько необходимо пропустить элементов",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Список сообщений из обратной связи",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackModelPagedResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/files": {
+      "post": {
+        "tags": [
+          "Files"
+        ],
+        "summary": "Загрузить файл (пока доступны только файлы .png, .jpg, .jpeg)",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "File"
+                ],
+                "type": "object",
+                "properties": {
+                  "File": {
+                    "type": "string",
+                    "description": "Файл",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "File": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Файл загружен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileUploadedModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/files/migration": {
+      "post": {
+        "tags": [
+          "Files"
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unit"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/footer": {
+      "put": {
+        "tags": [
+          "Footer"
+        ],
+        "summary": "Обновить данные футера",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Body.Address": {
+                    "maxLength": 256,
+                    "type": "string",
+                    "description": "Адрес"
+                  },
+                  "Body.PhoneNumber": {
+                    "maxLength": 11,
+                    "type": "string",
+                    "description": "Номер телефона"
+                  },
+                  "Body.VkUrl": {
+                    "maxLength": 256,
+                    "type": "string",
+                    "description": "Вк"
+                  },
+                  "Body.MaxUrl": {
+                    "maxLength": 256,
+                    "type": "string",
+                    "description": "MAX"
+                  },
+                  "NewPersonalDataPolicy": {
+                    "type": "string",
+                    "description": "Документ политики обработки персональных данных (null, если не менялся)",
+                    "format": "binary"
+                  },
+                  "NewUserAgreement": {
+                    "type": "string",
+                    "description": "Документ пользовательского соглашения (null, если не менялся)",
+                    "format": "binary"
+                  },
+                  "NewCookiesPolicy": {
+                    "type": "string",
+                    "description": "Документ политики cookies (null, если не менялся)",
+                    "format": "binary"
+                  },
+                  "NewTermsOfPartnership": {
+                    "type": "string",
+                    "description": "Документ условий партнерства (null, если не менялся)",
+                    "format": "binary"
+                  },
+                  "NewPressRelease": {
+                    "type": "string",
+                    "description": "Документ пресс релиза (null, если не менялся)",
+                    "format": "binary"
+                  },
+                  "NewBid": {
+                    "type": "string",
+                    "description": "Документ заявки (null, если не менялся)",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "Body.Address": {
+                  "style": "form"
+                },
+                "Body.PhoneNumber": {
+                  "style": "form"
+                },
+                "Body.VkUrl": {
+                  "style": "form"
+                },
+                "Body.MaxUrl": {
+                  "style": "form"
+                },
+                "NewPersonalDataPolicy": {
+                  "style": "form"
+                },
+                "NewUserAgreement": {
+                  "style": "form"
+                },
+                "NewCookiesPolicy": {
+                  "style": "form"
+                },
+                "NewTermsOfPartnership": {
+                  "style": "form"
+                },
+                "NewPressRelease": {
+                  "style": "form"
+                },
+                "NewBid": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Футер обновлен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unit"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Footer"
+        ],
+        "summary": "Получение данных футера",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "description": "Модель запроса",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/GetFooterQuery"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Данные футера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FooterModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/gallery-items": {
+      "post": {
+        "tags": [
+          "Gallery"
+        ],
+        "summary": "Добавить фотографии в фотоархив",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "File"
+                ],
+                "type": "object",
+                "properties": {
+                  "Body.TagIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "description": "Тэги"
+                  },
+                  "Body.Description": {
+                    "maxLength": 150,
+                    "type": "string",
+                    "description": "Описание"
+                  },
+                  "File": {
+                    "type": "string",
+                    "description": "Файл",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "Body.TagIds": {
+                  "style": "form"
+                },
+                "Body.Description": {
+                  "style": "form"
+                },
+                "File": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Идентификатор загруженного элемента",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuidCreatedOrUpdatedEntityModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Gallery"
+        ],
+        "summary": "Получить список элементов фотоархива",
+        "parameters": [
+          {
+            "name": "TagIds",
+            "in": "query",
+            "description": "Фильтр по тэгам",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          },
+          {
+            "name": "SortBy",
+            "in": "query",
+            "description": "Сортировка по (по умолчанию по номеру в обратном порядке)",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/GalleryItemSortBy"
+            }
+          },
+          {
+            "name": "Limit",
+            "in": "query",
+            "description": "Пагинация - сколько необходимо получить элементов",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Offset",
+            "in": "query",
+            "description": "Пагинация - сколько необходимо пропустить элементов",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Список элементов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GalleryItemModelPagedResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/gallery-items/{Id}": {
+      "delete": {
+        "tags": [
+          "Gallery"
+        ],
+        "summary": "Удалить элемент фотоархива",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Идентификатор элемента фотоархива",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Элемент удален",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unit"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Элемент не найден\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.GalleryItemNotFound - 42",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/gallery-items/{Id}/tags": {
+      "patch": {
+        "tags": [
+          "Gallery"
+        ],
+        "summary": "Обновить тэги элемента",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Идентификатор элемента",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Тело запроса",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateGalleryItemTagsModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateGalleryItemTagsModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateGalleryItemTagsModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Тэги обновлены",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unit"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Элемент не найден\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.GalleryItemNotFound - 42",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/gallery-items/order": {
+      "put": {
+        "tags": [
+          "Gallery"
+        ],
+        "summary": "Обновить очередность элементов фотоархива",
+        "requestBody": {
+          "description": "Тело запроса",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateGalleryItemsOrderModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateGalleryItemsOrderModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateGalleryItemsOrderModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Очередность обновлена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unit"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/news": {
+      "post": {
+        "tags": [
+          "News"
+        ],
+        "summary": "Создать новость",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "Body.Title",
+                  "Cover"
+                ],
+                "type": "object",
+                "properties": {
+                  "Body.Title": {
+                    "maxLength": 500,
+                    "type": "string",
+                    "description": "Заголовок"
+                  },
+                  "Body.Content": {
+                    "type": "string",
+                    "description": "Контент"
+                  },
+                  "Body.TagIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "description": "Теги"
+                  },
+                  "Cover": {
+                    "type": "string",
+                    "description": "Обложка",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "Body.Title": {
+                  "style": "form"
+                },
+                "Body.Content": {
+                  "style": "form"
+                },
+                "Body.TagIds": {
+                  "style": "form"
+                },
+                "Cover": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Новость создана",
+            "headers": {
+              "Location": {
+                "description": "URI созданного ресурса",
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuidCreatedOrUpdatedEntityModel"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Новость с таким заголовком уже существует.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.NewsWithSameTitleAlreadyExists - 21",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "News"
+        ],
+        "summary": "Получение списка новостей",
+        "parameters": [
+          {
+            "name": "SortBy",
+            "in": "query",
+            "description": "Сортировать по",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NewsSortBy"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "description": "Фильтрация по статусу.\nПо умолчанию: Unspecified - Published + Unpublished",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NewsStatus"
+            }
+          },
+          {
+            "name": "TagIds",
+            "in": "query",
+            "description": "Фильтр по тегам",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          },
+          {
+            "name": "SearchQuery",
+            "in": "query",
+            "description": "Строка поиска",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Limit",
+            "in": "query",
+            "description": "Пагинация - сколько необходимо получить элементов",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Offset",
+            "in": "query",
+            "description": "Пагинация - сколько необходимо пропустить элементов",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Список новостей",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewsListModelPagedResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/news/{Id}": {
+      "get": {
+        "tags": [
+          "News"
+        ],
+        "summary": "Получение новости",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Идентификатор новости",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Модель новости",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewsModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Новость не найдена.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.NewsNotFound - 22",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "News"
+        ],
+        "summary": "Обновление основной информации о новости",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Идентификатор новости",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "Body.Title"
+                ],
+                "type": "object",
+                "properties": {
+                  "Body.Title": {
+                    "maxLength": 500,
+                    "type": "string",
+                    "description": "Заголовок"
+                  },
+                  "Body.Content": {
+                    "type": "string",
+                    "description": "Контент"
+                  },
+                  "Body.TagIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "description": "Теги"
+                  },
+                  "NewCover": {
+                    "type": "string",
+                    "description": "Новая обложка (null, если обложка не меняется)",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "Body.Title": {
+                  "style": "form"
+                },
+                "Body.Content": {
+                  "style": "form"
+                },
+                "Body.TagIds": {
+                  "style": "form"
+                },
+                "NewCover": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Новость обновлена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuidCreatedOrUpdatedEntityModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Новость не найдена.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.NewsNotFound - 22",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Новость с таким заголовком уже существует.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.NewsWithSameTitleAlreadyExists - 21",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "News"
+        ],
+        "summary": "Удаление новости",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Идентификатор новости",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Новость удалена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unit"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Новость не найдена.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.NewsNotFound - 22",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/news/{Id}/content": {
+      "put": {
+        "tags": [
+          "News"
+        ],
+        "summary": "Обновление контента новости",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Идентификатор новости",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Тело запроса",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateNewsContentModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateNewsContentModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateNewsContentModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Новость обновлена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unit"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Новость не найдена.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.NewsNotFound - 22",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/news/{Id}/status": {
+      "patch": {
+        "tags": [
+          "News"
+        ],
+        "summary": "Обновление статуса новости",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Идентификатор новости",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Тело запроса",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateNewsStatusModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateNewsStatusModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateNewsStatusModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Статус обновлен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unit"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Новость не найдена.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.NewsNotFound - 22",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/projects": {
+      "post": {
+        "tags": [
+          "Project"
+        ],
+        "summary": "Создать проект",
+        "requestBody": {
+          "description": "Тело запроса",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CreateProjectModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CreateProjectModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CreateProjectModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Проект создан",
+            "headers": {
+              "Location": {
+                "description": "URI созданного ресурса",
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuidCreatedOrUpdatedEntityModel"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Проект с таким названием уже существует.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.ProjectWithSameNameAlreadyExists - 51",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Project"
+        ],
+        "summary": "Получение списка проектов",
+        "parameters": [
+          {
+            "name": "TagIds",
+            "in": "query",
+            "description": "Фильтрация по тэгам",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          },
+          {
+            "name": "SortBy",
+            "in": "query",
+            "description": "Сортировать по (по умолчанию - по дате создания в обратном порядке)",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ProjectSortBy"
+            }
+          },
+          {
+            "name": "SearchQuery",
+            "in": "query",
+            "description": "Строка поиска",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Limit",
+            "in": "query",
+            "description": "Пагинация - сколько необходимо получить элементов",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Offset",
+            "in": "query",
+            "description": "Пагинация - сколько необходимо пропустить элементов",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Список проектов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectListModelPagedResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/projects/{Id}": {
+      "put": {
+        "tags": [
+          "Project"
+        ],
+        "summary": "Отредактировать проект",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Идентификатор проекта",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Тело запроса",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateProjectModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateProjectModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateProjectModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Проект отредактирован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuidCreatedOrUpdatedEntityModel"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Проект с таким названием уже существует.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.ProjectWithSameNameAlreadyExists - 51",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Проект не найден.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.ProjectNotFound - 52",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Project"
+        ],
+        "summary": "Удалить проект",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Идентификатор проекта",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Проект удален",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unit"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Проект не найден.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.ProjectNotFound - 52",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Project"
+        ],
+        "summary": "Получение проекта по идентификатору",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Идентификатор проекта",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Проект",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Проект не найден.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.ProjectNotFound - 52",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/tags": {
+      "post": {
+        "tags": [
+          "Tags"
+        ],
+        "summary": "Создать тэг",
+        "requestBody": {
+          "description": "Тело запроса",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CreateTagModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CreateTagModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CreateTagModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Тэг создан",
+            "headers": {
+              "Location": {
+                "description": "URI созданного ресурса",
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Int64CreatedOrUpdatedEntityModel"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Тэг с таким именем уже существует.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.TagWithSameNameAlreadyExists - 31",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Tags"
+        ],
+        "summary": "Получение списка тэгов",
+        "parameters": [
+          {
+            "name": "Type",
+            "in": "query",
+            "description": "Фильтр по типу тэга",
+            "schema": {
+              "$ref": "#/components/schemas/TagType"
+            }
+          },
+          {
+            "name": "SortBy",
+            "in": "query",
+            "description": "Сортировка по",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/TagsSortBy"
+            }
+          },
+          {
+            "name": "Limit",
+            "in": "query",
+            "description": "Пагинация - сколько необходимо получить элементов",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Offset",
+            "in": "query",
+            "description": "Пагинация - сколько необходимо пропустить элементов",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "SearchQuery",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Список тэгов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagListModelPagedResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/tags/{Id}": {
+      "put": {
+        "tags": [
+          "Tags"
+        ],
+        "summary": "Отредактировать тэг",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Идентификатор тэга",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Тело запроса",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateTagModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateTagModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateTagModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Тэг отредактирован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Int64CreatedOrUpdatedEntityModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Тэг не найден.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.TagNotFound - 32",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Tags"
+        ],
+        "summary": "Получение тэга по идентификатору",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Идентификатор тэга",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Модель тэга",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Тэг не найден.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.TagNotFound - 32",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Tags"
+        ],
+        "summary": "Удаление тэга",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Идентификатор тэга",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Тэг удален",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unit"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Тэг не найден.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.TagNotFound - 32",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/tourist-articles": {
+      "post": {
+        "tags": [
+          "TouristArticle"
+        ],
+        "summary": "Создать статью для раздела \"Туристу\"",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "Body.Title",
+                  "Cover"
+                ],
+                "type": "object",
+                "properties": {
+                  "Body.Title": {
+                    "maxLength": 500,
+                    "type": "string",
+                    "description": "Заголовок"
+                  },
+                  "Body.TagIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "description": "Теги"
+                  },
+                  "Body.Content": {
+                    "type": "string",
+                    "description": "Контент"
+                  },
+                  "Body.TrolleybusRoute": {
+                    "maxLength": 150,
+                    "type": "string",
+                    "description": "Троллейбусный маршрут"
+                  },
+                  "Body.BusRoute": {
+                    "maxLength": 150,
+                    "type": "string",
+                    "description": "Автобусный маршрут"
+                  },
+                  "Body.CarRoute": {
+                    "maxLength": 150,
+                    "type": "string",
+                    "description": "Автомобильный маршрут"
+                  },
+                  "Body.Coordinates": {
+                    "maxLength": 150,
+                    "type": "string",
+                    "description": "Координаты"
+                  },
+                  "Cover": {
+                    "type": "string",
+                    "description": "Обложка",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "Body.Title": {
+                  "style": "form"
+                },
+                "Body.TagIds": {
+                  "style": "form"
+                },
+                "Body.Content": {
+                  "style": "form"
+                },
+                "Body.TrolleybusRoute": {
+                  "style": "form"
+                },
+                "Body.BusRoute": {
+                  "style": "form"
+                },
+                "Body.CarRoute": {
+                  "style": "form"
+                },
+                "Body.Coordinates": {
+                  "style": "form"
+                },
+                "Cover": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Статья создана",
+            "headers": {
+              "Location": {
+                "description": "URI созданного ресурса",
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuidCreatedOrUpdatedEntityModel"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Статья с таким заголовком уже существует.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.TouristArticleAlreadyExists - 71",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "TouristArticle"
+        ],
+        "summary": "Получение списка статей для раздела \"Туристу\"",
+        "parameters": [
+          {
+            "name": "SortBy",
+            "in": "query",
+            "description": "Сортировать по",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/TouristArticleSortBy"
+            }
+          },
+          {
+            "name": "TagIds",
+            "in": "query",
+            "description": "Фильтр по тегам",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          },
+          {
+            "name": "SearchQuery",
+            "in": "query",
+            "description": "Строка поиска",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Limit",
+            "in": "query",
+            "description": "Пагинация - сколько необходимо получить элементов",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Offset",
+            "in": "query",
+            "description": "Пагинация - сколько необходимо пропустить элементов",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Список статей",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TouristArticlesListModelPagedResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/tourist-articles/{Id}": {
+      "get": {
+        "tags": [
+          "TouristArticle"
+        ],
+        "summary": "Получение статьи из раздела \"Туристу\"",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Идентификатор статьи",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Модель статьи",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TouristArticleModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Статья не найдена.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.TouristArticleNotFound - 72",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "TouristArticle"
+        ],
+        "summary": "Обновление основной информации о статье из раздела \"Туристу\"",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Идентификатор статьи",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "Body.Title"
+                ],
+                "type": "object",
+                "properties": {
+                  "Body.Title": {
+                    "maxLength": 500,
+                    "type": "string",
+                    "description": "Заголовок"
+                  },
+                  "Body.TagIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "description": "Теги"
+                  },
+                  "Body.Content": {
+                    "type": "string",
+                    "description": "Контент"
+                  },
+                  "Body.TrolleybusRoute": {
+                    "maxLength": 150,
+                    "type": "string",
+                    "description": "Троллейбусный маршрут"
+                  },
+                  "Body.BusRoute": {
+                    "maxLength": 150,
+                    "type": "string",
+                    "description": "Автобусный маршрут"
+                  },
+                  "Body.CarRoute": {
+                    "maxLength": 150,
+                    "type": "string",
+                    "description": "Автомобильный маршрут"
+                  },
+                  "Body.Coordinates": {
+                    "maxLength": 150,
+                    "type": "string",
+                    "description": "Координаты"
+                  },
+                  "NewCover": {
+                    "type": "string",
+                    "description": "Новая обложка (null, если обложка не меняется)",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "Body.Title": {
+                  "style": "form"
+                },
+                "Body.TagIds": {
+                  "style": "form"
+                },
+                "Body.Content": {
+                  "style": "form"
+                },
+                "Body.TrolleybusRoute": {
+                  "style": "form"
+                },
+                "Body.BusRoute": {
+                  "style": "form"
+                },
+                "Body.CarRoute": {
+                  "style": "form"
+                },
+                "Body.Coordinates": {
+                  "style": "form"
+                },
+                "NewCover": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Статья обновлена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuidCreatedOrUpdatedEntityModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Статья не найдена.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.TouristArticleNotFound - 72",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Новость с таким заголовком уже существует.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.TouristArticleAlreadyExists - 71",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "TouristArticle"
+        ],
+        "summary": "Удаление статьи из раздела \"Туристу\"",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Идентификатор статьи",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Статья удалена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unit"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Статья не найдена.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.TouristArticleNotFound - 72",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/admin/tourist-articles/{Id}/content": {
+      "put": {
+        "tags": [
+          "TouristArticle"
+        ],
+        "summary": "Обновление контента статьи из раздела \"Туристу\"",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Идентификатор статьи",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Тело запроса",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateTouristArticleContentModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateTouristArticleContentModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateTouristArticleContentModel"
+                  }
+                ],
+                "description": "Тело запроса"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Ошибка валидации запроса | Неправильный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно прав для выполнения запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Статья обновлена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unit"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Статья не найдена.\n            ErrorCode: Abstraction.Models.Errors.ErrorCodes.TouristArticleNotFound - 72",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Admin.Scheme": [
+              "Admin.Scheme"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BadResponseModel": {
+        "required": [
+          "errorCode"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Информация об ошибке"
+          },
+          "errorCode": {
+            "$ref": "#/components/schemas/ErrorCodes"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateProjectModel": {
+        "required": [
+          "name",
+          "photoId",
+          "status",
+          "year"
+        ],
+        "type": "object",
+        "properties": {
+          "photoId": {
+            "type": "string",
+            "description": "Идентификатор фотографии",
+            "format": "uuid"
+          },
+          "name": {
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string",
+            "description": "Название"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ProjectStatus"
+          },
+          "year": {
+            "type": "integer",
+            "description": "Срок реализации (год)",
+            "format": "int32"
+          },
+          "month": {
+            "type": "integer",
+            "description": "Срок реализации (месяц)",
+            "format": "int32",
+            "nullable": true
+          },
+          "day": {
+            "type": "integer",
+            "description": "Срок реализации (день)",
+            "format": "int32",
+            "nullable": true
+          },
+          "content": {
+            "type": "string",
+            "description": "Содержание",
+            "nullable": true
+          },
+          "tagIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "Список тэгов",
+            "nullable": true
+          },
+          "coordinates": {
+            "maxLength": 100,
+            "type": "string",
+            "description": "Координаты",
+            "nullable": true
+          },
+          "stages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProjectStageModel"
+            },
+            "description": "Этапы",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateTagModel": {
+        "required": [
+          "name",
+          "showIcon",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 25,
+            "minLength": 1,
+            "type": "string",
+            "description": "Наименование тега"
+          },
+          "type": {
+            "$ref": "#/components/schemas/TagType"
+          },
+          "showIcon": {
+            "type": "boolean",
+            "description": "Показывать иконку"
+          },
+          "iconName": {
+            "type": "string",
+            "description": "Имя иконки",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ErrorCodes": {
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          21,
+          22,
+          31,
+          32,
+          42,
+          51,
+          52,
+          62,
+          71,
+          72
+        ],
+        "type": "integer",
+        "description": "<p>Возможные значения:</p>\n<ul>\n<li><b>1 - InternalServerError</b>: </li>\n<li><b>2 - RequestError</b>: </li>\n<li><b>3 - NotFoundError</b>: </li>\n<li><b>4 - AccessDeniedError</b>: </li>\n<li><b>5 - UnauthorizedError</b>: </li>\n<li><b>6 - TooManyRequestsError</b>: </li>\n<li><b>7 - AlreadyExistsError</b>: </li>\n<li><b>21 - NewsWithSameTitleAlreadyExists</b>: Новость с таким названием уже существует</li>\n<li><b>22 - NewsNotFound</b>: Новость не найдена</li>\n<li><b>31 - TagWithSameNameAlreadyExists</b>: Тэг с таким именем уже существует (уникальность в рамках типа)</li>\n<li><b>32 - TagNotFound</b>: Тэг не найден</li>\n<li><b>42 - GalleryItemNotFound</b>: Элемент фотоархива не найден</li>\n<li><b>51 - ProjectWithSameNameAlreadyExists</b>: Проект с таким названием уже существует</li>\n<li><b>52 - ProjectNotFound</b>: Проект не найден</li>\n<li><b>62 - FamousPersonNotFound</b>: Знаменитая личность не найдена</li>\n<li><b>71 - TouristArticleAlreadyExists</b>: Статья для раздела \"Туристу\" с таким заголовком уже существует</li>\n<li><b>72 - TouristArticleNotFound</b>: Статья для раздела \"Туристу\" не найдена</li>\n</ul>\n",
+        "format": "int32"
+      },
+      "FamousPersonListModel": {
+        "required": [
+          "birthDate",
+          "id",
+          "name",
+          "surname",
+          "tags"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Идентификатор",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "Имя"
+          },
+          "surname": {
+            "type": "string",
+            "description": "Фамилия"
+          },
+          "patronymic": {
+            "type": "string",
+            "description": "Отчество",
+            "nullable": true
+          },
+          "photo": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImageModel"
+              }
+            ],
+            "description": "Фотография",
+            "nullable": true
+          },
+          "birthDate": {
+            "type": "string",
+            "description": "Дата рождения",
+            "format": "date"
+          },
+          "deathDate": {
+            "type": "string",
+            "description": "Дата смерти",
+            "format": "date",
+            "nullable": true
+          },
+          "content": {
+            "type": "string",
+            "description": "Содержание",
+            "nullable": true
+          },
+          "shortInfo": {
+            "type": "string",
+            "description": "Краткая информация",
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagModel"
+            },
+            "description": "Тэги"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FamousPersonListModelPagedResult": {
+        "required": [
+          "items",
+          "itemsOffset",
+          "itemsQuantity",
+          "totalItems"
+        ],
+        "type": "object",
+        "properties": {
+          "totalItems": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "itemsQuantity": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "itemsOffset": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamousPersonListModel"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "FamousPersonModel": {
+        "required": [
+          "birthDate",
+          "id",
+          "name",
+          "surname",
+          "tags"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Идентификатор",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "Имя"
+          },
+          "surname": {
+            "type": "string",
+            "description": "Фамилия"
+          },
+          "patronymic": {
+            "type": "string",
+            "description": "Отчество",
+            "nullable": true
+          },
+          "photo": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImageModel"
+              }
+            ],
+            "description": "Фотография",
+            "nullable": true
+          },
+          "birthDate": {
+            "type": "string",
+            "description": "Дата рождения",
+            "format": "date"
+          },
+          "deathDate": {
+            "type": "string",
+            "description": "Дата смерти",
+            "format": "date",
+            "nullable": true
+          },
+          "content": {
+            "type": "string",
+            "description": "Содержание",
+            "nullable": true
+          },
+          "shortInfo": {
+            "type": "string",
+            "description": "Краткая информация",
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagModel"
+            },
+            "description": "Тэги"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FamousPersonSortBy": {
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "type": "integer",
+        "description": "<p>Возможные значения:</p>\n<ul>\n<li><b>1 - Name</b>: По имени</li>\n<li><b>2 - NameDesc</b>: По имени в обратном порядке</li>\n<li><b>3 - Surname</b>: По фамилии</li>\n<li><b>4 - SurnameDesc</b>: По фамилии в обратном порядке</li>\n<li><b>5 - Patronymic</b>: По отчеству</li>\n<li><b>6 - PatronymicDesc</b>: По отчеству в обратном порядке</li>\n<li><b>7 - DateCreated</b>: По дате создания</li>\n<li><b>8 - DateCreatedDesc</b>: По дате создания в обратном порядке</li>\n</ul>\n",
+        "format": "int32"
+      },
+      "FeedbackModel": {
+        "required": [
+          "dateCreated",
+          "email",
+          "message",
+          "name",
+          "phone"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Имя"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Телефон"
+          },
+          "email": {
+            "type": "string",
+            "description": "Почта"
+          },
+          "message": {
+            "type": "string",
+            "description": "Сообщение"
+          },
+          "dateCreated": {
+            "type": "string",
+            "description": "Дата публикации",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FeedbackModelPagedResult": {
+        "required": [
+          "items",
+          "itemsOffset",
+          "itemsQuantity",
+          "totalItems"
+        ],
+        "type": "object",
+        "properties": {
+          "totalItems": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "itemsQuantity": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "itemsOffset": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FeedbackModel"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "FeedbackSortBy": {
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "type": "integer",
+        "description": "<p>Возможные значения:</p>\n<ul>\n<li><b>1 - Name</b>: По имени</li>\n<li><b>2 - NameDesc</b>: По имени в обратном порядке</li>\n<li><b>3 - Email</b>: По почте</li>\n<li><b>4 - EmailDesc</b>: По почте в обратном порядке</li>\n<li><b>5 - Phone</b>: По телефону</li>\n<li><b>6 - PhoneDesc</b>: По телефону в обратном порядке</li>\n<li><b>7 - DateCreated</b>: По дате публикации</li>\n<li><b>8 - DateCreatedDesc</b>: По дате публикации в обратном порядке</li>\n</ul>\n",
+        "format": "int32"
+      },
+      "FileModel": {
+        "required": [
+          "extension",
+          "id",
+          "name",
+          "type",
+          "url"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Идентификатор файла",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "Имя"
+          },
+          "type": {
+            "$ref": "#/components/schemas/FileType"
+          },
+          "extension": {
+            "type": "string",
+            "description": "Расширение файла"
+          },
+          "url": {
+            "type": "string",
+            "description": "S3 Url"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FileType": {
+        "enum": [
+          1,
+          2,
+          3
+        ],
+        "type": "integer",
+        "description": "<p>Возможные значения:</p>\n<ul>\n<li><b>1 - Picture</b>: Картинка</li>\n<li><b>2 - Video</b>: Аудио-файл</li>\n<li><b>3 - Document</b>: Документ</li>\n</ul>\n",
+        "format": "int32"
+      },
+      "FileUploadedModel": {
+        "required": [
+          "bucket",
+          "extension",
+          "id",
+          "url"
+        ],
+        "type": "object",
+        "properties": {
+          "extension": {
+            "type": "string",
+            "description": "Расширение файла"
+          },
+          "bucket": {
+            "type": "string",
+            "description": "Бакет"
+          },
+          "url": {
+            "type": "string",
+            "description": "Путь до файла"
+          },
+          "id": {
+            "type": "string",
+            "description": "Идентификатор файла",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FooterModel": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Адрес",
+            "nullable": true
+          },
+          "maxUrl": {
+            "type": "string",
+            "description": "MAX",
+            "nullable": true
+          },
+          "vkUrl": {
+            "type": "string",
+            "description": "VK",
+            "nullable": true
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Номер телефона",
+            "nullable": true
+          },
+          "personalDataPolicy": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FileModel"
+              }
+            ],
+            "description": "Политика обработки персональных данных",
+            "nullable": true
+          },
+          "userAgreement": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FileModel"
+              }
+            ],
+            "description": "Пользовательское соглашение",
+            "nullable": true
+          },
+          "cookiesPolicy": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FileModel"
+              }
+            ],
+            "description": "Политика cookies",
+            "nullable": true
+          },
+          "termsOfPartnership": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FileModel"
+              }
+            ],
+            "description": "Условия партнерства",
+            "nullable": true
+          },
+          "pressRelease": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FileModel"
+              }
+            ],
+            "description": "Пресс релиз",
+            "nullable": true
+          },
+          "bid": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FileModel"
+              }
+            ],
+            "description": "Заявка",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GalleryItemModel": {
+        "required": [
+          "id",
+          "image",
+          "number",
+          "tags"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Идентификатор элемента",
+            "format": "uuid"
+          },
+          "number": {
+            "type": "integer",
+            "description": "Порядковый номер элемента",
+            "format": "int64"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagModel"
+            },
+            "description": "Тэги"
+          },
+          "image": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImageModel"
+              }
+            ],
+            "description": "Изображение"
+          },
+          "description": {
+            "type": "string",
+            "description": "Описание",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GalleryItemModelPagedResult": {
+        "required": [
+          "items",
+          "itemsOffset",
+          "itemsQuantity",
+          "totalItems"
+        ],
+        "type": "object",
+        "properties": {
+          "totalItems": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "itemsQuantity": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "itemsOffset": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GalleryItemModel"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "GalleryItemOrderModel": {
+        "required": [
+          "id",
+          "number"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Идентификатор элемента фотоархива",
+            "format": "uuid"
+          },
+          "number": {
+            "type": "integer",
+            "description": "Номер элемента",
+            "format": "int64"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GalleryItemSortBy": {
+        "enum": [
+          1,
+          2
+        ],
+        "type": "integer",
+        "description": "<p>Возможные значения:</p>\n<ul>\n<li><b>1 - Number</b>: Сортировка по номеру</li>\n<li><b>2 - NumberDesc</b>: Сортировка по номеру в обратном порядке</li>\n</ul>\n",
+        "format": "int32"
+      },
+      "GetFooterQuery": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "GuidCreatedOrUpdatedEntityModel": {
+        "required": [
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Идентификатор сущности",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ImageModel": {
+        "required": [
+          "extension",
+          "id",
+          "name",
+          "type",
+          "url",
+          "variantType"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Идентификатор файла",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "Имя"
+          },
+          "type": {
+            "$ref": "#/components/schemas/FileType"
+          },
+          "extension": {
+            "type": "string",
+            "description": "Расширение файла"
+          },
+          "url": {
+            "type": "string",
+            "description": "S3 Url"
+          },
+          "variantType": {
+            "$ref": "#/components/schemas/ImageVariantType"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ImageVariantType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "type": "integer",
+        "description": "<p>Возможные значения:</p>\n<ul>\n<li><b>0 - Original</b>: Оригинальное изображение</li>\n<li><b>1 - Small</b>: Small</li>\n<li><b>2 - Medium</b>: Medium</li>\n<li><b>3 - Large</b>: Large</li>\n</ul>\n",
+        "format": "int32"
+      },
+      "Int64CreatedOrUpdatedEntityModel": {
+        "required": [
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор сущности",
+            "format": "int64"
+          }
+        },
+        "additionalProperties": false
+      },
+      "NewsListModel": {
+        "required": [
+          "id",
+          "slug",
+          "status",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Идентификатор новости",
+            "format": "uuid"
+          },
+          "slug": {
+            "type": "string",
+            "description": "Slug"
+          },
+          "title": {
+            "type": "string",
+            "description": "Заголовок"
+          },
+          "publishDate": {
+            "type": "string",
+            "description": "Дата публикации",
+            "format": "date-time",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/NewsStatus"
+          }
+        },
+        "additionalProperties": false
+      },
+      "NewsListModelPagedResult": {
+        "required": [
+          "items",
+          "itemsOffset",
+          "itemsQuantity",
+          "totalItems"
+        ],
+        "type": "object",
+        "properties": {
+          "totalItems": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "itemsQuantity": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "itemsOffset": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NewsListModel"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "NewsModel": {
+        "required": [
+          "cover",
+          "id",
+          "slug",
+          "status",
+          "tags",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Идентификатор новости",
+            "format": "uuid"
+          },
+          "slug": {
+            "type": "string",
+            "description": "Slug"
+          },
+          "title": {
+            "type": "string",
+            "description": "Заголовок"
+          },
+          "publishDate": {
+            "type": "string",
+            "description": "Дата публикации",
+            "format": "date-time",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/NewsStatus"
+          },
+          "content": {
+            "type": "string",
+            "description": "Контент",
+            "nullable": true
+          },
+          "cover": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImageModel"
+              }
+            ],
+            "description": "Обложка"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NewsTagBindModel"
+            },
+            "description": "Теги"
+          }
+        },
+        "additionalProperties": false
+      },
+      "NewsSortBy": {
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "type": "integer",
+        "description": "<p>Возможные значения:</p>\n<ul>\n<li><b>1 - Title</b>: По заголовку</li>\n<li><b>2 - TitleDesc</b>: По заголовку в обратном порядке</li>\n<li><b>3 - PublishDate</b>: По дате публикации</li>\n<li><b>4 - PublishDateDesc</b>: По дате публикации в обратном порядке</li>\n<li><b>5 - Status</b>: По статусу</li>\n<li><b>6 - StatusDesc</b>: По статусу в обратном порядке</li>\n</ul>\n",
+        "format": "int32"
+      },
+      "NewsStatus": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "description": "<p>Возможные значения:</p>\n<ul>\n<li><b>0 - Unspecified</b>: Не определен</li>\n<li><b>1 - Unpublished</b>: Не опубликована</li>\n<li><b>2 - Published</b>: Опубликована</li>\n</ul>\n",
+        "format": "int32"
+      },
+      "NewsTagBindModel": {
+        "required": [
+          "id",
+          "name",
+          "showIcon"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор тэга",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string",
+            "description": "Название"
+          },
+          "showIcon": {
+            "type": "boolean",
+            "description": "Показывать иконку"
+          },
+          "iconName": {
+            "type": "string",
+            "description": "Имя иконки",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProjectListModel": {
+        "required": [
+          "id",
+          "name",
+          "photo",
+          "status",
+          "tags",
+          "year"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Идентификатор",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "Название"
+          },
+          "photo": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImageModel"
+              }
+            ],
+            "description": "Фотография"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ProjectStatus"
+          },
+          "year": {
+            "type": "integer",
+            "description": "Срок реализации (год)",
+            "format": "int32"
+          },
+          "month": {
+            "type": "integer",
+            "description": "Срок реализации (месяц)",
+            "format": "int32",
+            "nullable": true
+          },
+          "day": {
+            "type": "integer",
+            "description": "Срок реализации (день)",
+            "format": "int32",
+            "nullable": true
+          },
+          "content": {
+            "type": "string",
+            "description": "Содержание",
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagModel"
+            },
+            "description": "Тэги"
+          },
+          "coordinates": {
+            "type": "string",
+            "description": "Координаты",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProjectListModelPagedResult": {
+        "required": [
+          "items",
+          "itemsOffset",
+          "itemsQuantity",
+          "totalItems"
+        ],
+        "type": "object",
+        "properties": {
+          "totalItems": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "itemsQuantity": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "itemsOffset": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProjectListModel"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProjectModel": {
+        "required": [
+          "id",
+          "name",
+          "photo",
+          "status",
+          "tags",
+          "year"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Идентификатор",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "Название"
+          },
+          "photo": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImageModel"
+              }
+            ],
+            "description": "Фотографии"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ProjectStatus"
+          },
+          "year": {
+            "type": "integer",
+            "description": "Срок реализации (год)",
+            "format": "int32"
+          },
+          "month": {
+            "type": "integer",
+            "description": "Срок реализации (месяц)",
+            "format": "int32",
+            "nullable": true
+          },
+          "day": {
+            "type": "integer",
+            "description": "Срок реализации (день)",
+            "format": "int32",
+            "nullable": true
+          },
+          "content": {
+            "type": "string",
+            "description": "Содержание",
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagModel"
+            },
+            "description": "Тэги"
+          },
+          "coordinates": {
+            "type": "string",
+            "description": "Координаты",
+            "nullable": true
+          },
+          "stages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProjectStageModel"
+            },
+            "description": "Стадии",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProjectSortBy": {
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "type": "integer",
+        "description": "<p>Возможные значения:</p>\n<ul>\n<li><b>1 - Name</b>: По названию</li>\n<li><b>2 - NameDesc</b>: По названию в обратном порядке</li>\n<li><b>3 - Period</b>: По сроку реализации</li>\n<li><b>4 - PeriodDesc</b>: По сроку реализации в обратном порядке</li>\n<li><b>5 - Status</b>: По статусу</li>\n<li><b>6 - StatusDesc</b>: По статусу в обратном порядке</li>\n<li><b>7 - DateCreated</b>: По дате создания записи</li>\n<li><b>8 - DateCreatedDesc</b>: По дате создания записи в обратном порядке</li>\n</ul>\n",
+        "format": "int32"
+      },
+      "ProjectStageModel": {
+        "required": [
+          "fileId",
+          "identifier",
+          "name",
+          "number"
+        ],
+        "type": "object",
+        "properties": {
+          "identifier": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string",
+            "description": "Уникальный идентификатор"
+          },
+          "name": {
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string",
+            "description": "Название этапа"
+          },
+          "fileId": {
+            "type": "string",
+            "description": "Идентификатор файла (файл загружается через /api/admin/files)",
+            "format": "uuid"
+          },
+          "description": {
+            "type": "string",
+            "description": "Описание",
+            "nullable": true
+          },
+          "number": {
+            "type": "integer",
+            "description": "Порядковый номер",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProjectStatus": {
+        "enum": [
+          1,
+          2,
+          3
+        ],
+        "type": "integer",
+        "description": "<p>Возможные значения:</p>\n<ul>\n<li><b>1 - Completed</b>: Сдан</li>\n<li><b>2 - InProcess</b>: В процессе</li>\n<li><b>3 - InDevelopment</b>: В разработке</li>\n</ul>\n",
+        "format": "int32"
+      },
+      "TagListModel": {
+        "required": [
+          "id",
+          "name",
+          "showIcon",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string",
+            "description": "Наименование"
+          },
+          "type": {
+            "$ref": "#/components/schemas/TagType"
+          },
+          "showIcon": {
+            "type": "boolean",
+            "description": "Показывать иконку"
+          },
+          "iconName": {
+            "type": "string",
+            "description": "Имя иконки",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TagListModelPagedResult": {
+        "required": [
+          "items",
+          "itemsOffset",
+          "itemsQuantity",
+          "totalItems"
+        ],
+        "type": "object",
+        "properties": {
+          "totalItems": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "itemsQuantity": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "itemsOffset": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagListModel"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "TagModel": {
+        "required": [
+          "id",
+          "name",
+          "showIcon",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string",
+            "description": "Наименование"
+          },
+          "type": {
+            "$ref": "#/components/schemas/TagType"
+          },
+          "showIcon": {
+            "type": "boolean",
+            "description": "Показывать иконку"
+          },
+          "iconName": {
+            "type": "string",
+            "description": "Имя иконки",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TagType": {
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "type": "integer",
+        "description": "<p>Возможные значения:</p>\n<ul>\n<li><b>1 - News</b>: Тэг для новостей</li>\n<li><b>2 - GalleryItem</b>: Тэг для фото в фотоархиве</li>\n<li><b>3 - Project</b>: Тэг для проекта</li>\n<li><b>4 - FamousPerson</b>: Тэг для знаменитой личности</li>\n<li><b>5 - TouristArticle</b>: Тэг для элементов раздела \"Туристу\"</li>\n<li><b>6 - ProjectStage</b>: Тэг для этапа реализации проекта</li>\n</ul>\n",
+        "format": "int32"
+      },
+      "TagsSortBy": {
+        "enum": [
+          1,
+          2
+        ],
+        "type": "integer",
+        "description": "<p>Возможные значения:</p>\n<ul>\n<li><b>1 - Name</b>: Сортировать по названию</li>\n<li><b>2 - NameDesc</b>: Сортировать по названию в обратном порядке</li>\n</ul>\n",
+        "format": "int32"
+      },
+      "TouristArticleModel": {
+        "required": [
+          "cover",
+          "id",
+          "tags",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Идентификатор статьи",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "description": "Заголовок"
+          },
+          "dateCreated": {
+            "type": "string",
+            "description": "Дата создания",
+            "format": "date-time",
+            "nullable": true
+          },
+          "content": {
+            "type": "string",
+            "description": "Контент",
+            "nullable": true
+          },
+          "cover": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImageModel"
+              }
+            ],
+            "description": "Обложка"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagModel"
+            },
+            "description": "Тэги"
+          },
+          "trolleybusRoute": {
+            "type": "string",
+            "description": "Троллейбусный маршрут",
+            "nullable": true
+          },
+          "busRoute": {
+            "type": "string",
+            "description": "Автобусный маршрут",
+            "nullable": true
+          },
+          "carRoute": {
+            "type": "string",
+            "description": "Автомобильный маршрут",
+            "nullable": true
+          },
+          "coordinates": {
+            "type": "string",
+            "description": "Координаты",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TouristArticleSortBy": {
+        "enum": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "type": "integer",
+        "description": "<p>Возможные значения:</p>\n<ul>\n<li><b>1 - Title</b>: По заголовку</li>\n<li><b>2 - TitleDesc</b>: По заголовку в обратном порядке</li>\n<li><b>3 - DateCreated</b>: По дате создания</li>\n<li><b>4 - DateCreatedDesc</b>: По дате создания в обратном порядке</li>\n</ul>\n",
+        "format": "int32"
+      },
+      "TouristArticlesListModel": {
+        "required": [
+          "cover",
+          "id",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Идентификатор статьи",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "description": "Заголовок"
+          },
+          "dateCreated": {
+            "type": "string",
+            "description": "Дата создания",
+            "format": "date-time",
+            "nullable": true
+          },
+          "content": {
+            "type": "string",
+            "description": "Контент",
+            "nullable": true
+          },
+          "cover": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImageModel"
+              }
+            ],
+            "description": "Обложка"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TouristArticlesListModelPagedResult": {
+        "required": [
+          "items",
+          "itemsOffset",
+          "itemsQuantity",
+          "totalItems"
+        ],
+        "type": "object",
+        "properties": {
+          "totalItems": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "itemsQuantity": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "itemsOffset": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TouristArticlesListModel"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Unit": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "UpdateGalleryItemTagsModel": {
+        "required": [
+          "tags"
+        ],
+        "type": "object",
+        "properties": {
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "Тэги"
+          },
+          "description": {
+            "maxLength": 150,
+            "type": "string",
+            "description": "Описание",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateGalleryItemsOrderModel": {
+        "required": [
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GalleryItemOrderModel"
+            },
+            "description": "Элементы"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateNewsContentModel": {
+        "required": [
+          "content"
+        ],
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "Контент"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateNewsStatusModel": {
+        "required": [
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/NewsStatus"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateProjectModel": {
+        "required": [
+          "name",
+          "photoId",
+          "status",
+          "year"
+        ],
+        "type": "object",
+        "properties": {
+          "photoId": {
+            "type": "string",
+            "description": "Идентификатор фото",
+            "format": "uuid"
+          },
+          "name": {
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string",
+            "description": "Название"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ProjectStatus"
+          },
+          "year": {
+            "type": "integer",
+            "description": "Срок реализации (год)",
+            "format": "int32"
+          },
+          "month": {
+            "type": "integer",
+            "description": "Срок реализации (месяц)",
+            "format": "int32",
+            "nullable": true
+          },
+          "day": {
+            "type": "integer",
+            "description": "Срок реализации (день)",
+            "format": "int32",
+            "nullable": true
+          },
+          "content": {
+            "type": "string",
+            "description": "Содержание",
+            "nullable": true
+          },
+          "tagIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "Список тэгов",
+            "nullable": true
+          },
+          "coordinates": {
+            "maxLength": 100,
+            "type": "string",
+            "description": "Координаты",
+            "nullable": true
+          },
+          "stages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProjectStageModel"
+            },
+            "description": "Этапы",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateTagModel": {
+        "required": [
+          "name",
+          "showIcon"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 25,
+            "minLength": 1,
+            "type": "string",
+            "description": "Название"
+          },
+          "showIcon": {
+            "type": "boolean",
+            "description": "Показывать иконку"
+          },
+          "iconName": {
+            "type": "string",
+            "description": "Имя иконки",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateTouristArticleContentModel": {
+        "required": [
+          "content"
+        ],
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "Контент"
+          },
+          "trolleybusRoute": {
+            "maxLength": 150,
+            "type": "string",
+            "description": "Троллейбусный маршрут",
+            "nullable": true
+          },
+          "busRoute": {
+            "maxLength": 150,
+            "type": "string",
+            "description": "Автобусный маршрут",
+            "nullable": true
+          },
+          "carRoute": {
+            "maxLength": 150,
+            "type": "string",
+            "description": "Автомобильный маршрут",
+            "nullable": true
+          },
+          "coordinates": {
+            "maxLength": 150,
+            "type": "string",
+            "description": "Координаты",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Admin.Scheme": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://keycloak.solutionfactory.ru/realms/Anniversary/protocol/openid-connect/auth",
+            "tokenUrl": "https://keycloak.solutionfactory.ru/realms/Anniversary/protocol/openid-connect/token",
+            "scopes": {
+              "AdminScope": "AdminScope",
+              "openid": "Identifier",
+              "roles": "Roles User",
+              "profile": "Profile identity user",
+              "email": "User email"
+            }
+          }
+        }
+      }
+    }
+  }
+}
