@@ -37,11 +37,7 @@ export const Router = () => {
           <Route
             key={path}
             path={path}
-            element={
-              <RoleGuard allowedRoles={roles} showForbiddenMessage={true}>
-                <Suspense fallback={<PageLoader />}>{Component}</Suspense>
-              </RoleGuard>
-            }
+            element={<Suspense fallback={<PageLoader />}>{Component}</Suspense>}
           />
         ))}
 
