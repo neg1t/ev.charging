@@ -5,6 +5,8 @@ import { combine, createStore } from 'effector'
 
 import { authModel } from 'entities/auth'
 
+import { StationsPage } from 'pages/stations-list'
+
 import { AppRoutes } from 'shared/config'
 
 import type { IRoute, ITab } from './types'
@@ -12,16 +14,17 @@ import type { IRoute, ITab } from './types'
 const TestPageLazy = lazy(() =>
   import('pages/test').then((m) => ({ default: m.TestPage })),
 )
-const StationsPageLazy = lazy(() =>
-  import('pages/stations-list').then((m) => ({
-    default: m.StationsPage,
-  })),
-)
+// const StationsPageLazy = lazy(() =>
+//   import('pages/stations-list').then((m) => ({
+//     default: m.StationsPage,
+//   })),
+// )
 
 export const $routes = createStore<IRoute[]>([
   {
     path: AppRoutes.Stations.path,
-    Component: <StationsPageLazy />,
+    // Component: <StationsPageLazy />,
+    Component: <StationsPage />,
     roles: ['admin', 'agent'],
   },
   {
