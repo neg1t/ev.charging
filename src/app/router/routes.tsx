@@ -48,10 +48,17 @@ export const $tabs = createStore<ITab[]>([
 
 const $userRoles = authModel.stores.$role
 
+// export const $availableTabs = combine($tabs, $userRoles, (tabs, role) => {
+//   return tabs.filter((tab) => tab.roles.includes(role))
+// })
+
 export const $availableTabs = combine($tabs, $userRoles, (tabs, role) => {
-  return tabs.filter((tab) => tab.roles.includes(role))
+  return tabs
 })
 
 export const $availableRoutes = combine($routes, $userRoles, (routes, role) => {
-  return routes.filter((route) => route.roles.includes(role))
+  return routes
 })
+// export const $availableRoutes = combine($routes, $userRoles, (routes, role) => {
+//   return routes.filter((route) => route.roles.includes(role))
+// })
